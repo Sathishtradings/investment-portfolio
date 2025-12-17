@@ -182,6 +182,30 @@ export default function LoginPage() {
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
+<button
+  type="button"
+  onClick={async () => {
+    if (!email) {
+      alert("Enter your email first");
+      return;
+    }
+    await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    alert("Password reset link sent to your email");
+  }}
+  style={{
+    background: "none",
+    border: "none",
+    color: "#93c5fd",
+    fontSize: "0.85rem",
+    cursor: "pointer",
+    marginBottom: "1rem",
+  }}
+>
+  Forgot password?
+</button>
+
               </div>
 
               {mode === "signup" && (
