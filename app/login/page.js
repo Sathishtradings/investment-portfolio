@@ -151,84 +151,80 @@ export default function LoginPage() {
             {error && <div style={styles.errorBox}>{error}</div>}
             {info && <div style={styles.infoBox}>{info}</div>}
 
-            <form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
-              <label style={styles.label}>Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="input"
-                style={styles.input}
-                autoComplete="email"
-              />
+            <form onSubmit={handleSubmit}>
+  <div style={{ marginBottom: "1rem" }}>
+    <input
+      type="email"
+      placeholder="Email address"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      className="input"
+      style={{ width: "100%" }}
+      autoComplete="email"
+      required
+    />
+  </div>
 
-              <label style={{ ...styles.label, marginTop: 12 }}>Password</label>
-              <div style={{ position: "relative" }}>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={mode === "login" ? "Your password" : "Create a strong password"}
-                  className="input"
-                  style={styles.input}
-                  autoComplete={mode === "login" ? "current-password" : "new-password"}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  style={styles.pwdToggle}
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
+  <div style={{ marginBottom: "1rem", position: "relative" }}>
+    <input
+      type="password"
+      placeholder="Password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      className="input"
+      style={{ width: "100%" }}
+      autoComplete="current-password"
+      required
+    />
+  </div>
+
+  <button
+    type="button"
+    onClick={handleForgotPassword}
+    style={{
+      background: "none",
+      border: "none",
+      color: "#93c5fd",
+      fontSize: "0.85rem",
+      cursor: "pointer",
+      marginBottom: "1rem",
+    }}
+  >
+    Forgot password?
+  </button>
+
+  {error && (
+    <p style={{ color: "#f87171", marginBottom: "1rem" }}>
+      {error}
+    </p>
+  )}
+
+  <button
+    type="submit"
+    disabled={loading}
+    className="btn btn-primary"
+    style={{ width: "100%" }}
+  >
+    {loading ? "Signing in..." : mode === "login" ? "Login" : "Create account"}
+  </button>
+</form>
+
 <button
   type="button"
   onClick={async () => {
     if (!email) {
-      alert("Enter your email first");
+      alert("Enter email first");
       return;
     }
-    await supabaseClient.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    alert("Password reset link sent to your email");
+    await supabaseClient.auth.signInWithOtp({ email });
+    alert("Magic link sent. Use biometric login if available.");
   }}
-  style={{
-    background: "none",
-    border: "none",
-    color: "#93c5fd",
-    fontSize: "0.85rem",
-    cursor: "pointer",
-    marginBottom: "1rem",
-  }}
+  className="btn"
+  style={{ width: "100%", marginTop: "1rem" }}
 >
-  Forgot password?
+  Login with Biometrics
 </button>
 
-              </div>
-
-              {mode === "signup" && (
-                <div style={{ marginTop: 8, fontSize: 13, color: passwordStrength === "Good" ? "#10b981" : "#f59e0b" }}>
-                  Password: {passwordStrength}
-                </div>
-              )}
-
-              <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-                <button type="submit" disabled={loading} className="btn btn-primary" style={{ flex: 1 }}>
-                  {loading ? (mode === "login" ? "Signing in..." : "Creating...") : (mode === "login" ? "Sign in" : "Create account")}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => { setMode((m) => (m === "login" ? "signup" : "login")); clearMessages(); }}
-                  className="btn"
-                  style={{ flex: 0.9, background: "transparent", border: "1px solid rgba(255,255,255,0.08)", color: "#93c5fd" }}
-                >
-                  {mode === "login" ? "Sign up" : "Login"}
-                </button>
-              </div>
-            </form>
 
             <div style={{ textAlign: "center", marginTop: 12 }}>
               <button onClick={sendMagicLink} className="btn" style={{ background: "transparent", color: "#93c5fd", fontSize: 13 }}>
